@@ -61,20 +61,6 @@ class C(B):
 
 import sys
 
-def build_tree(classes):
-    tree = {}
-
-    # build classes' relationship tree
-    for relation in classes:
-        child, *parents = relation
-
-        if len(parents) == 0:
-            tree[child] = []
-        else:
-            tree[child] = parents.pop().split()
-
-    return tree
-
 def is_parent(tree, start, end, path=[]):
     path = path + [start]
 
@@ -98,35 +84,32 @@ def read_int():
 # read n classes relationship queries from stdin
 def read_classes(n):
     reader = (tuple(map(str.strip, line.split(':'))) for line in sys.stdin)
-    classes = []
+    classes = {}
 
     for i in range(n):
-        classes.append(next(reader))
+        key, *val = next(reader)
+        if len(val) != 0:
+            val = val.pop().split()
+        classes[key] = val
 
     return classes
 
 # read q check queries from stdin
 def read_queries(q):
-    reader = (tuple(map(str, line.split())) for line in sys.stdin)
-    queries = []
-
-    for i in range(q):
-        queries.append(next(reader))
+    reader = [line.split() for line in sys.stdin]
+    queries = list(reader)
 
     return queries
 
 def main():
     n = read_int()
-
     classes = read_classes(n)
-    relationships = build_tree(classes)
-
     q = read_int()
     queries = read_queries(q)
 
     for query in queries:
         base, child = query
-        if is_parent(relationships, child, base):
+        if is_parent(classes, child, base):
             print("Yes")
         else:
             print("No")
